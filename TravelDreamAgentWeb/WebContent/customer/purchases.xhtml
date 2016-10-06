@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>TravelDream Agent - Your purchases</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<h:form>
+				<p:dataTable id="purchaseTable"
+					emptyMessage="You still haven't bought any packages..."
+					value="#{buyListBean.purchaseList}" var="buy"
+					rowKey="#{buy.purchaseID}">
+					<f:facet name="header">Your purchases</f:facet>
+					<p:column headerText="Purchase ID" style="width:15%">#{buy.purchaseID}</p:column>
+					<p:column headerText="Package">
+						<h:link value="#{buy.boughtPackage.name}" outcome="packDetails">
+							<f:param name="packId" value="#{buy.boughtPackage.packageID}"></f:param>
+						</h:link>
+					</p:column>
+					<p:column headerText="Paid">#{buy.boughtPackage.price}</p:column>
+					<p:column style="width:4%">
+						<p:commandButton id="detailsButton" update=":detailsDialog"
+							oncomplete="PF('detailsDialog').show()" title="Show Details"
+							icon="ui-icon-search">
+							<f:setPropertyActionListener
+								target="#{buyListBean.selectedPurchase}" value="#{buy}" />
+						</p:commandButton>
+					</p:column>
+					<f:facet name="footer">
+						Total purchases: #{fn:length(buyListBean.purchaseList)}
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+
+			<p:dialog id="detailsDialog" widgetVar="detailsDialog"
+				header="Purchase #{buyListBean.selectedPurchase.purchaseID}"
+				showEffect="fade" hideEffect="fade" modal="true" dynamic="true">
+				<h:form id="dialogForm" prependId="false">
+					<div align="center">
+						<h:panelGrid columns="3"
+							columnClasses="datalist-column, datalist-column, datalist-column"
+							style="width:100%">
+							<p:dataTable id="excDates"
+								emptyMessage="There are no excursions in this package."
+								value="#{buyListBean.selectedPurchase.excursionDateAssignments}"
+								var="eda" rowKey="#{eda.excursion.productID}">
+								<f:facet name="header">Excursion dates</f:facet>
+								<p:column headerText="Name">#{eda.excursion.name}</p:column>
+								<p:column headerText="Date">
+									<h:outputText value="#{eda.date}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+							<p:dataTable id="flightDates"
+								emptyMessage="There are no flights in this package."
+								value="#{buyListBean.selectedPurchase.flightDateAssignments}"
+								var="fda" rowKey="#{fda.flight.productID}">
+								<f:facet name="header">Flight dates</f:facet>
+								<p:column headerText="Call sign">#{fda.flight.callSign}</p:column>
+								<p:column headerText="Date">
+									<h:outputText value="#{fda.date}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+							<p:dataTable id="hotelDates"
+								emptyMessage="There are no hotels in this package."
+								value="#{buyListBean.selectedPurchase.hotelDateAssignments}"
+								var="hda" rowKey="#{hda.hotel.productID}" style="width:100%">
+								<f:facet name="header">Hotel dates</f:facet>
+								<p:column headerText="Name">#{hda.hotel.name}</p:column>
+								<p:column headerText="Check-in date">
+									<h:outputText value="#{hda.arrivalDate}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Check-out date">
+									<h:outputText value="#{hda.departureDate}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</h:panelGrid>
+					</div>
+				</h:form>
+			</p:dialog>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

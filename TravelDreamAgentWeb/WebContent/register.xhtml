@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Customer Registration</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<h:form>
+				<p:panel header="Registration Form"
+					style="width:40%;margin-left:auto;margin-right:auto">
+					<p:messages id="msg" autoUpdate="true" showDetail="true"
+						showSummary="false" closable="true" />
+					<h:panelGrid columns="2" id="registrationGrid" style="width:100%">
+						<h:outputLabel for="name">Name:</h:outputLabel>
+						<p:inputText id="name" value="#{regBean.user.name}"
+							style="width:98%" />
+
+						<h:outputLabel for="surname">Surname:</h:outputLabel>
+						<p:inputText id="surname" value="#{regBean.user.surname}"
+							style="width:98%" />
+
+						<h:outputLabel for="dateOfBirth">Date of birth:</h:outputLabel>
+						<p:calendar id="dateOfBirth" navigator="true"
+							yearRange="c-100:c+10" showOn="focus"
+							value="#{regBean.user.dateOfBirth}" >
+							<f:convertDateTime pattern="dd/MM/yy" />
+						</p:calendar>
+
+						<h:outputLabel for="homeAddress">Home address:</h:outputLabel>
+						<p:inputText id="homeAddress"
+							value="#{regBean.user.homeAddress}" style="width:98%" />
+
+						<h:outputLabel for="eMailAddress">E-mail address:</h:outputLabel>
+						<p:inputText id="eMailAddress"
+							value="#{regBean.user.eMailAddress}" style="width:98%" />
+
+						<h:outputLabel for="username">Choose a username:</h:outputLabel>
+						<p:inputText id="username" value="#{regBean.user.username}"
+							style="width:98%" />
+
+						<h:outputLabel for="password">Choose a password:</h:outputLabel>
+						<p:password id="password" value="#{regBean.user.password}"
+							match="repeatPassword" feedback="true" label="Password"
+							style="width:98%" />
+
+						<h:outputLabel for="repeatPassword">Repeat password:</h:outputLabel>
+						<p:password id="repeatPassword" label="Repeat password"
+							value="#{regBean.user.password}" style="width:98%" />
+					</h:panelGrid>
+					<br />
+					<div id="button" align="center">
+						<p:commandButton value="Register!" update="registrationGrid"
+							action="#{regBean.register()}" />
+					</div>
+				</p:panel>
+			</h:form>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml"></ui:include>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>TravelDream Agent - User Management</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<p:growl id="msg" life="4000" showSummary="false" showDetail="true"
+				autoUpdate="true" />
+			<br />
+			<h:form id="addUserForm">
+				<p:panel header="Add user" id="addUser" toggleable="true"
+					collapsed="true" toggleSpeed="250">
+					<p:panelGrid id="categoryGrid" columns="1"
+						style="width:30%;margin-left:auto;margin-right:auto">
+						<p:column>
+							<p:outputLabel for="category">Category:</p:outputLabel>
+							<p:selectOneMenu style="width:98%" id="category"
+								value="#{userMgmtBean.user.category}">
+								<f:selectItems value="#{enumConverter.categoriesForAdmin}"
+									var="category" itemValue="#{category}"
+									itemLabel="#{category.label}" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:panelGrid>
+					<br />
+					<p:panelGrid id="newUserData" style="width:100%">
+						<p:row>
+							<p:column>
+								<p:outputLabel for="username">Username:</p:outputLabel>
+								<p:inputText id="username" value="#{userMgmtBean.user.username}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								<p:outputLabel for="password">Password:</p:outputLabel>
+								<p:password id="password" value="#{userMgmtBean.user.password}"
+									match="repeatPassword" feedback="true" label="Password"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								<h:outputLabel for="repeatPassword">Repeat password:</h:outputLabel>
+								<p:password id="repeatPassword" label="Repeat password"
+									value="#{userMgmtBean.user.password}" style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								<p:outputLabel for="name">Name:</p:outputLabel>
+								<p:inputText id="name" value="#{userMgmtBean.user.name}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								<p:outputLabel for="surname">Surname:</p:outputLabel>
+								<p:inputText id="surname" value="#{userMgmtBean.user.surname}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								<h:outputLabel for="dateOfBirth">Date of birth:</h:outputLabel>
+								<br />
+								<p:calendar id="dateOfBirth" navigator="true"
+									yearRange="-100" showOn="focus"
+									value="#{userMgmtBean.user.dateOfBirth}" style="width:98%" >
+									<f:convertDateTime pattern="dd/MM/yy" />
+								</p:calendar>
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+								<h:outputLabel for="homeAddress">Home address:</h:outputLabel>
+								<p:inputText id="homeAddress"
+									value="#{userMgmtBean.user.homeAddress}" style="width:98%" />
+							</p:column>
+							<p:column>
+								<h:outputLabel for="eMailAddress">E-mail address:</h:outputLabel>
+								<p:inputText id="eMailAddress"
+									value="#{userMgmtBean.user.eMailAddress}" style="width:98%" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					<p:commandButton value="Add user"
+						update="addUser :tableForm:userList"
+						action="#{userMgmtBean.addUser()}" />
+				</p:panel>
+			</h:form>
+
+			<br />
+
+			<h:form id="tableForm">
+				<p:dataTable id="userList"
+					filteredValue="#{userMgmtBean.filteredUsers}" var="user"
+					value="#{userMgmtBean.userList}"
+					selection="#{userMgmtBean.selectedUsers}" rowKey="#{user.username}">
+					<f:facet name="header">User list</f:facet>
+
+					<p:column selectionMode="multiple" style="width:2%" />
+
+					<p:column headerText="Username" filterBy="username"
+						sortBy="username">
+							#{user.username}
+					</p:column>
+
+					<p:column headerText="Category" style="width:10%">
+							#{user.category.label}
+					</p:column>
+
+					<p:column headerText="Name" filterBy="name" sortBy="name">
+							#{user.name}
+					</p:column>
+
+					<p:column headerText="Surname" filterBy="surname" sortBy="surname">
+							#{user.surname}
+					</p:column>
+
+					<p:column headerText="E-mail address" filterBy="eMailAddress"
+						sortBy="eMailAddress">
+							#{user.eMailAddress}
+					</p:column>
+
+					<p:column headerText="Date of birth" filterBy="dateOfBirth"
+						sortBy="dateOfBirth">
+						<h:outputText value="#{user.dateOfBirth}">
+							<f:convertDateTime locale="en_US" dateStyle="long"
+								pattern="MMMM dd, yyyy" />
+						</h:outputText>
+					</p:column>
+
+					<p:column style="width:4%">
+						<p:commandButton id="editButton" update=":editDlg :dialogForm"
+							oncomplete="PF('editDialog').show()" title="Edit"
+							icon="ui-icon-pencil">
+							<f:setPropertyActionListener
+								target="#{userMgmtBean.selectedUser}" value="#{user}" />
+						</p:commandButton>
+					</p:column>
+
+					<f:facet name="footer">
+						<p:commandButton id="deleteButton" value="Delete selected users"
+							icon="ui-icon-trash" update=":tableForm:userList"
+							actionListener="#{userMgmtBean.deleteSelectedUsers()}">
+							<p:confirm header="Deletion confirmation"
+								message="Are you sure you want to delete the selected users?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+							Registered users: #{fn:length(userMgmtBean.userList)}
+					</f:facet>
+				</p:dataTable>
+
+				<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton value="Yes" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="No" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+
+			<p:dialog id="editDlg" widgetVar="editDialog" style="max-width:700px"
+				header="Edit User #{userMgmtBean.selectedUser.username}"
+				showEffect="fade" hideEffect="fade" modal="true" dynamic="true">
+				<h:form id="dialogForm" prependId="false">
+					<div align="center">
+						<p:panelGrid id="editUserGrid" style="width:90%">
+							<p:row>
+								<p:column colspan="2" rendered="#{not userMgmtBean.itCustomer}">
+									<p:outputLabel for="categoryEdit">Category:</p:outputLabel>
+									<p:selectOneMenu style="width:98%" id="categoryEdit"
+										disabled="#{userMgmtBean.itMe}"
+										value="#{userMgmtBean.selectedUser.category}">
+										<f:selectItems value="#{enumConverter.categoriesForAdmin}"
+											var="category" itemValue="#{category}"
+											itemLabel="#{category.label}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column colspan="2" rendered="#{userMgmtBean.itCustomer}">
+									<p:outputLabel>Category switching is not allowed for customers.</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column style="width:50%">
+									<p:outputLabel for="passwordEdit">Password:</p:outputLabel>
+									<p:password id="passwordEdit"
+										value="#{userMgmtBean.selectedUser.password}"
+										match="repeatPasswordEdit" feedback="true" label="Password"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:50%">
+									<h:outputLabel for="repeatPasswordEdit">Repeat password:</h:outputLabel>
+									<p:password id="repeatPasswordEdit" label="Repeat password"
+										value="#{userMgmtBean.selectedUser.password}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:50%">
+									<p:outputLabel for="nameEdit">Name:</p:outputLabel>
+									<p:inputText id="nameEdit"
+										value="#{userMgmtBean.selectedUser.name}" style="width:98%" />
+								</p:column>
+								<p:column style="width:50%">
+									<p:outputLabel for="surnameEdit">Surname:</p:outputLabel>
+									<p:inputText id="surnameEdit"
+										value="#{userMgmtBean.selectedUser.surname}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									<h:outputLabel for="homeAddressEdit">Home address:</h:outputLabel>
+									<p:inputText id="homeAddressEdit"
+										value="#{userMgmtBean.selectedUser.homeAddress}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:50%">
+									<h:outputLabel for="dateOfBirthEdit">Date of birth:</h:outputLabel>
+									<p:calendar id="dateOfBirthEdit" navigator="true"
+										yearRange="c-100:c+10" showOn="focus"
+										value="#{userMgmtBean.selectedUser.dateOfBirth}"
+										style="width:98%" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</p:column>
+								<p:column style="width:50%">
+									<h:outputLabel for="eMailAddressEdit">E-mail address:</h:outputLabel>
+									<p:inputText id="eMailAddressEdit"
+										value="#{userMgmtBean.selectedUser.eMailAddress}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<h:panelGrid>
+							<p:commandButton id="submitChanges"
+								action="#{userMgmtBean.editUser()}" update=":tableForm:userList"
+								value="Submit changes"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editDialog').hide()" />
+						</h:panelGrid>
+					</div>
+				</h:form>
+			</p:dialog>
+			<br />
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

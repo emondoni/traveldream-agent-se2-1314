@@ -1,0 +1,58 @@
+
+html, body {
+	height: 99%;
+}
+
+#wrap {
+	min-height: 100%;
+}
+
+#main {
+	overflow: auto;
+	padding-bottom: 95px;
+} /* must be same height as the footer */
+
+#footer {
+	position: relative;
+	margin-top: -95px; /* negative value of footer height */
+	height: 95px;
+	clear: both;
+}
+
+.ui-picklist .ui-picklist-list {
+	width: 500px !important;
+}
+
+.panelgrid-title {
+	max-width: 480px;
+}
+
+.panelgrid-price {
+	max-width: 120px;
+}
+
+.panelgrid-column {
+	width: 80%;
+}
+
+.datalist-column {
+	width: 33%;
+	vertical-align: top;
+}
+
+.scrollpanel-override {
+	border: 0px;
+	background-color: transparent;
+}
+
+.usergrid-large {
+	width: 40%;
+}
+
+.usergrid-narrow {
+	width: 20%;
+}
+
+.equal-column {
+	width: 50%;
+}

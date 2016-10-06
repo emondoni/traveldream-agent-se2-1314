@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Billing information</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<p:panel rendered="#{not empty billMgmtBean.purchase}">
+				<h:form>
+					<div align="center">
+						<h:outputText style="font-weight:bold;font-size:larger"
+							value="You're buying"></h:outputText>
+						<br />
+						<h1 style="color: green">#{billMgmtBean.purchase.boughtPackage.name}</h1>
+					</div>
+					Below is a summary of your package. Should you spot any errors, now is the time to <h:commandLink
+						value="go back" action="#{billMgmtBean.goBack()}" /> and correct them! <br />
+					<br />
+					<h:panelGrid columns="3"
+						columnClasses="datalist-column, datalist-column, datalist-column"
+						style="width:100%">
+						<p:dataTable id="excDates"
+							emptyMessage="There are no excursions in this package."
+							value="#{billMgmtBean.purchase.excursionDateAssignments}"
+							var="eda" rowKey="#{eda.excursion.productID}">
+							<f:facet name="header">Excursion dates</f:facet>
+							<p:column headerText="Name">#{eda.excursion.name}</p:column>
+							<p:column headerText="Date">
+								<h:outputText value="#{eda.date}">
+									<f:convertDateTime locale="en_US" dateStyle="long"
+										pattern="E, MMMM dd, yyyy" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+						<p:dataTable id="flightDates"
+							emptyMessage="There are no flights in this package."
+							value="#{billMgmtBean.purchase.flightDateAssignments}" var="fda"
+							rowKey="#{fda.flight.productID}">
+							<f:facet name="header">Flight dates</f:facet>
+							<p:column headerText="Call sign">#{fda.flight.callSign}</p:column>
+							<p:column headerText="From">#{fda.flight.departurePlace}</p:column>
+							<p:column headerText="To">#{fda.flight.arrivalPlace}</p:column>
+							<p:column headerText="Date">
+								<h:outputText value="#{fda.date}">
+									<f:convertDateTime locale="en_US" dateStyle="long"
+										pattern="E, MMMM dd, yyyy" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+						<p:dataTable id="hotelDates"
+							emptyMessage="There are no hotels in this package."
+							value="#{billMgmtBean.purchase.hotelDateAssignments}" var="hda"
+							rowKey="#{hda.hotel.productID}" style="width:100%">
+							<f:facet name="header">Hotel dates</f:facet>
+							<p:column headerText="Name">#{hda.hotel.name}</p:column>
+							<p:column headerText="Check-in date">
+								<h:outputText value="#{hda.arrivalDate}">
+									<f:convertDateTime locale="en_US" dateStyle="long"
+										pattern="E, MMMM dd, yyyy" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Check-out date">
+								<h:outputText value="#{hda.departureDate}">
+									<f:convertDateTime locale="en_US" dateStyle="long"
+										pattern="E, MMMM dd, yyyy" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+					<br />
+					Your credit card will be charged a total <h:outputText
+						value="€ #{billMgmtBean.purchase.boughtPackage.price}"
+						style="color:green;font-weight:bold" />.
+					Enter your billing data. <br />
+					<br />
+					<p:messages id="msg" autoUpdate="true" closable="true"
+						showDetail="true" showSummary="false" />
+					<p:panelGrid style="width:100%">
+						<p:row>
+							<p:column>
+								Card circuit:
+								<p:selectOneMenu style="width:98%" id="circuit">
+									<f:selectItem itemLabel="American Express"
+										itemValue="American Express"></f:selectItem>
+									<f:selectItem itemLabel="Mastercard" itemValue="Mastercard"></f:selectItem>
+									<f:selectItem itemLabel="Visa" itemValue="Visa"></f:selectItem>
+								</p:selectOneMenu>
+							</p:column>
+							<p:column style="width:30%">
+								Expiry date: <br />
+								<p:selectOneMenu id="month" style="width:49%">
+									<f:selectItem itemLabel="January" itemValue="January"></f:selectItem>
+									<f:selectItem itemLabel="February" itemValue="February"></f:selectItem>
+									<f:selectItem itemLabel="March" itemValue="March"></f:selectItem>
+									<f:selectItem itemLabel="And so on..." itemValue="And so on..."></f:selectItem>
+								</p:selectOneMenu>
+
+								<p:selectOneMenu id="year" style="width:49%">
+									<f:selectItem itemLabel="2014" itemValue="2014"></f:selectItem>
+									<f:selectItem itemLabel="2015" itemValue="2015"></f:selectItem>
+									<f:selectItem itemLabel="2016" itemValue="2016"></f:selectItem>
+									<f:selectItem itemLabel="And so on..." itemValue="And so on..."></f:selectItem>
+								</p:selectOneMenu>
+							</p:column>
+							<p:column style="width:15%">
+								CVV2 code:
+								<p:inputText style="width:98%" maxlength="3"></p:inputText>
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								Cardholder name:
+								<p:inputText style="width:98%"></p:inputText>
+							</p:column>
+							<p:column colspan="2">
+								Card number:
+								<p:inputText style="width:98%" maxlength="16"></p:inputText>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+					<br />
+					<div align="center">
+						<p:commandButton value="Buy!"
+							action="#{billMgmtBean.bankBlackBox()}"></p:commandButton>
+					</div>
+				</h:form>
+			</p:panel>
+
+			<p:panel rendered="#{empty billMgmtBean.purchase}">
+				<div align="center">
+					<h1 style="color: red">Oops!</h1>
+					Did you try to access this page without following the proper path
+					leading to it?
+					<h:link value="Too bad."
+						outcome="#{sessionMgr.currentUserHomePage}" />
+				</div>
+			</p:panel>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

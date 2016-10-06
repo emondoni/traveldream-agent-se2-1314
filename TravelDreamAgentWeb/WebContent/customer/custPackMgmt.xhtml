@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>TravelDream Agent - Your custom packages</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<p:growl id="msg" life="4000" autoUpdate="true" showSummary="false"
+				showDetail="true"></p:growl>
+			<br />
+			<h:form id="custForm">
+				<p:dataTable id="custList" value="#{custMgmtBean.packageList}"
+					var="pack" rowKey="#{pack.packageID}"
+					selection="#{custMgmtBean.selectedPackages}"
+					filteredValue="#{custMgmtBean.filteredList}"
+					emptyMessage="You have no custom packages. What are you waiting for?">
+					<f:facet name="header">Your custom packages</f:facet>
+					<p:column selectionMode="multiple" style="width:2%" />
+					<p:column headerText="Name">#{pack.name}</p:column>
+					<p:column headerText="Price" style="width:10%">#{pack.price}</p:column>
+					<p:column headerText="Excursions included" style="width:10%">#{pack.excursionCount}</p:column>
+					<p:column headerText="Flights included" style="width:10%">#{pack.flightCount}</p:column>
+					<p:column headerText="Hotels included" style="width:10%">#{pack.hotelCount}</p:column>
+					<p:column headerText="Based on">
+						<h:link outcome="packDetails" value="#{pack.basedOn.name}">
+							<f:param name="packId" value="#{pack.basedOn.packageID}"></f:param>
+						</h:link>
+					</p:column>
+					<p:column style="width:4%">
+						<p:button id="showDetailsButton" title="Show Details"
+							outcome="packDetails?packId=#{pack.packageID}"
+							icon="ui-icon-search" />
+					</p:column>
+					<f:facet name="footer">
+						<p:commandButton id="deleteButton"
+							value="Delete selected packages" icon="ui-icon-trash"
+							update=":custForm"
+							actionListener="#{custMgmtBean.deleteSelectedPackages()}">
+							<p:confirm header="Deletion confirmation"
+								message="Are you sure you want to delete the selected packages?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						Total packages: #{fn:length(custMgmtBean.packageList)}
+					</f:facet>
+				</p:dataTable>
+
+				<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton value="Yes" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="No" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

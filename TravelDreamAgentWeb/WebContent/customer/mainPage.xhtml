@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Package catalogue</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<h:form id="packForm">
+				<p:dataGrid id="packGrid" value="#{packMgmtBean.packageList}"
+					var="pack" columns="1" rows="5" paginator="true"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					emptyMessage="We're sorry, no packages are on the catalogue at the moment!">
+					<p:panel style="max-width:100%" header="#{pack.name}">
+						<h:panelGrid columns="1" style="width:100%;text-align:center">
+							<h:outputText value="#{pack.shortDescription}" />
+							<h:outputText style="font-weight:bold" value="#{pack.price} €" />
+							<p:button icon="ui-icon-search" value="Learn more"
+								outcome="packDetails">
+								<f:param name="packId" value="#{pack.packageID}"></f:param>
+							</p:button>
+						</h:panelGrid>
+					</p:panel>
+				</p:dataGrid>
+			</h:form>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

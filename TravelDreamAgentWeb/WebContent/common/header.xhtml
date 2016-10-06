@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head />
+
+<h:body>
+	<ui:composition>
+		<h:form id="headerForm">
+			<p:menubar>
+				<p:menuitem value="Home" url="#{sessionMgr.currentUserHomePage}"
+					icon="ui-icon-home" />
+				<p:menuitem id="sessionIdentifier"
+					value="Hi, #{sessionMgr.currentUser.name}, you're logged in as #{sessionMgr.currentUser.category.label}"
+					disabled="true" rendered="#{sessionMgr.someoneLogged}" />
+				<f:facet name="options">
+					<p:menuButton value="My TravelDream"
+						rendered="#{sessionMgr.customerLogged}">
+						<p:menuitem value="My custom packages" icon="ui-icon-suitcase"
+							url="/customer/custPackMgmt.xhtml"></p:menuitem>
+						<p:menuitem value="My purchases" icon="ui-icon-cart"
+							url="/customer/purchases.xhtml"></p:menuitem>
+					</p:menuButton>
+					<p:button value="My account" outcome="/common/account.xhtml"
+						rendered="#{sessionMgr.someoneLogged}" icon="ui-icon-gear" />
+					<p:commandButton value="Logout" action="#{sessionMgr.logout()}"
+						rendered="#{sessionMgr.someoneLogged}" icon="ui-icon-power" />
+				</f:facet>
+			</p:menubar>
+		</h:form>
+	</ui:composition>
+</h:body>
+</html>

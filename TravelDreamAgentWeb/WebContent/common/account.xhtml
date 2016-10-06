@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Your account</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<p:panel header="My personal details"
+				rendered="#{sessionMgr.someoneLogged}"
+				style="width:70%;margin-left:auto;margin-right:auto">
+				<p:growl id="msg" life="4000" showSummary="false" showDetail="true"
+					autoUpdate="true" />
+				<h:form id="accountForm" prependId="false">
+					<div align="center">
+						<p:panelGrid id="editUserGrid" style="width:100%">
+							<p:row>
+								<p:column style="width:50%">
+									<p:outputLabel for="passwordEdit">Password:</p:outputLabel>
+									<p:password id="passwordEdit"
+										value="#{accMgmtBean.currentUser.password}"
+										match="repeatPasswordEdit" feedback="true" label="Password"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:50%">
+									<h:outputLabel for="repeatPasswordEdit">Repeat password:</h:outputLabel>
+									<p:password id="repeatPasswordEdit" label="Repeat password"
+										value="#{accMgmtBean.currentUser.password}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:50%">
+									<p:outputLabel for="nameEdit">Name:</p:outputLabel>
+									<p:inputText id="nameEdit"
+										value="#{accMgmtBean.currentUser.name}" style="width:98%" />
+								</p:column>
+								<p:column style="width:50%">
+									<p:outputLabel for="surnameEdit">Surname:</p:outputLabel>
+									<p:inputText id="surnameEdit"
+										value="#{accMgmtBean.currentUser.surname}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									<h:outputLabel for="homeAddressEdit">Home address:</h:outputLabel>
+									<p:inputText id="homeAddressEdit"
+										value="#{accMgmtBean.currentUser.homeAddress}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:50%">
+									<h:outputLabel for="dateOfBirthEdit">Date of birth:</h:outputLabel>
+									<p:calendar id="dateOfBirthEdit" navigator="true"
+										yearRange="c-100:c+10" showOn="focus"
+										value="#{accMgmtBean.currentUser.dateOfBirth}"
+										style="width:98%" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</p:column>
+								<p:column style="width:50%">
+									<h:outputLabel for="eMailAddressEdit">E-mail address:</h:outputLabel>
+									<p:inputText id="eMailAddressEdit"
+										value="#{accMgmtBean.currentUser.eMailAddress}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<h:panelGrid>
+							<p:commandButton id="submitChanges"
+								action="#{accMgmtBean.submitChanges()}"
+								update=":accountForm :headerForm:sessionIdentifier"
+								value="Submit changes" />
+						</h:panelGrid>
+					</div>
+				</h:form>
+			</p:panel>
+
+			<p:panel rendered="#{not sessionMgr.someoneLogged}">
+				<div align="center">
+					<h2 style="color: red">You shouldn't be here!</h2>
+					Please, go back to the
+					<h:link value="home page" outcome="/home.xhtml" />
+					and get an account!
+				</div>
+			</p:panel>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

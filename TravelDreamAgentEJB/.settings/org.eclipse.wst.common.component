@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+	<wb-module deploy-name="TravelDreamAgentEJB">
+		<wb-resource deploy-path="/" source-path="/ejbModule"
+			tag="defaultRootSource" />
+		<property name="java-output-path" value="/TravelDreamAgentEJB/build/classes" />
+		<property name="ClientProject" value="TravelDreamAgentEJBClient" />
+		<property name="ClientJARURI" value="TravelDreamAgentEJBClient.jar" />
+	</wb-module>
+</project-modules>

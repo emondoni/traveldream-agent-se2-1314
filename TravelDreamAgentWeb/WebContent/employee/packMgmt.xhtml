@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>TravelDream Agent - Package Management</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<p:growl id="msg" life="4000" autoUpdate="true" showSummary="false"
+				showDetail="true"></p:growl>
+			<br />
+			<p:panel id="addPack" header="Add travel package" toggleable="true"
+				collapsed="true" toggleSpeed="250">
+				<h:form id="addPackForm">
+					<p:panelGrid id="addPackGrid" style="width:100%">
+						<p:row>
+							<p:column>
+									Package name: 
+									<p:inputText id="packName" value="#{packMgmtBean.pack.name}"
+									style="width:98%" />
+							</p:column>
+							<p:column style="width:25%">
+									Price of the package:
+									<p:inputText id="packPrice" value="#{packMgmtBean.pack.price}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+									Description: 
+									<p:inputTextarea autoResize="false" id="packDescription"
+									value="#{packMgmtBean.pack.description}" style="width:98%" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+					<p:pickList id="excPickList"
+						style="margin-left:auto;margin-right:auto"
+						converter="pickListConverter" value="#{packMgmtBean.excModel}"
+						var="exc" itemLabel="#{exc.name}" itemValue="#{exc}"
+						showSourceFilter="true" showTargetFilter="true"
+						filterMatchMode="contains">
+						<f:facet name="sourceCaption">Available excursions</f:facet>
+						<f:facet name="targetCaption">Excursions in package</f:facet>
+						<p:ajax event="transfer" update="addPackButton" />
+					</p:pickList>
+					<br />
+					<p:pickList id="flightPickList"
+						style="margin-left:auto;margin-right:auto"
+						converter="pickListConverter" value="#{packMgmtBean.flightModel}"
+						var="flight"
+						itemLabel="#{flight.callSign} (#{flight.departurePlace} - #{flight.arrivalPlace})"
+						itemValue="#{flight}" showSourceFilter="true"
+						showTargetFilter="true" filterMatchMode="contains">
+						<f:facet name="sourceCaption">Available flights</f:facet>
+						<f:facet name="targetCaption">Flights in package</f:facet>
+						<p:ajax event="transfer" update="addPackButton" />
+					</p:pickList>
+					<br />
+					<p:pickList id="hotelPickList"
+						style="width:auto;margin-left:auto;margin-right:auto"
+						converter="pickListConverter" value="#{packMgmtBean.hotelModel}"
+						var="hotel" itemLabel="#{hotel.name} - #{hotel.address}"
+						itemValue="#{hotel}" showSourceFilter="true"
+						showTargetFilter="true" filterMatchMode="contains">
+						<f:facet name="sourceCaption">Available hotels</f:facet>
+						<f:facet name="targetCaption">Included hotels</f:facet>
+						<p:ajax event="transfer" update="addPackButton" />
+					</p:pickList>
+
+					<p:commandButton id="addPackButton" value="Create package"
+						update=":addPackForm :tableForm:packList"
+						action="#{packMgmtBean.addPackage()}"
+						disabled="#{packMgmtBean.componentListEmpty}" />
+				</h:form>
+			</p:panel>
+			<br />
+			<h:form id="tableForm">
+				<p:dataTable id="packList"
+					emptyMessage="No package has been created yet. Be the first!"
+					filteredValue="#{packMgmtBean.filteredPacks}"
+					value="#{packMgmtBean.packageList}" var="pack"
+					rowKey="#{pack.packageID}"
+					selection="#{packMgmtBean.selectedPackages}">
+					<f:facet name="header">Package list</f:facet>
+					<p:column selectionMode="multiple" style="width:2%" />
+					<p:column headerText="Name" filterBy="name"
+						filterMatchMode="contains" filterStyle="width:50%" sortBy="name">#{pack.name}</p:column>
+					<p:column headerText="Price" filterBy="price"
+						filterStyle="width:95%" sortBy="price" style="width:10%">#{pack.price}</p:column>
+					<p:column headerText="Excursions included" style="width:10%">#{pack.excursionCount}</p:column>
+					<p:column headerText="Flights included" style="width:10%">#{pack.flightCount}</p:column>
+					<p:column headerText="Hotels included" style="width:10%">#{pack.hotelCount}</p:column>
+					<p:column style="width:4%">
+						<p:commandButton id="editPackButton" update=":dialogForm"
+							oncomplete="PF('editDialog').show()" title="Edit"
+							icon="ui-icon-pencil">
+							<f:setPropertyActionListener target="#{editPackBean.pack}"
+								value="#{pack}" />
+							<f:actionListener
+								binding="#{editPackBean.prepareEditPickLists()}"></f:actionListener>
+						</p:commandButton>
+					</p:column>
+					<f:facet name="footer">
+						<p:commandButton id="deleteButton"
+							value="Delete selected packages" icon="ui-icon-trash"
+							update=":tableForm"
+							actionListener="#{packMgmtBean.deleteSelectedPackages()}">
+							<p:confirm header="Deletion confirmation"
+								message="Are you sure you want to delete these packages?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						Total packages: #{fn:length(packMgmtBean.packageList)}
+					</f:facet>
+				</p:dataTable>
+
+				<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton value="Yes" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="No" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+
+			<p:dialog id="editDlg" widgetVar="editDialog" header="Edit Package"
+				showEffect="fade" hideEffect="fade" modal="true" dynamic="true">
+				<h:form id="dialogForm">
+					<p:scrollPanel id="dialogScrollPanel"
+						styleClass="scrollpanel-override" style="width:auto;height:600px"
+						mode="native">
+						<p:panelGrid id="editPackData">
+							<p:row>
+								<p:column>
+									Package name: 
+									<p:inputText id="packName" value="#{editPackBean.pack.name}"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:25%">
+									Price of the package:
+									<p:inputText id="packPrice" value="#{editPackBean.pack.price}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Description: 
+									<p:inputTextarea autoResize="false" id="packDescription"
+										value="#{editPackBean.pack.description}" style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:pickList id="excPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter"
+							value="#{editPackBean.excEditModel}" var="exc"
+							itemLabel="#{exc.name}" itemValue="#{exc}"
+							showSourceFilter="true" showTargetFilter="true"
+							filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available excursions</f:facet>
+							<f:facet name="targetCaption">Excursions in package</f:facet>
+							<p:ajax event="transfer" update="submitChanges" />
+						</p:pickList>
+						<br />
+						<p:pickList id="flightPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter"
+							value="#{editPackBean.flightEditModel}" var="flight"
+							itemLabel="#{flight.callSign} #{flight.departurePlace} #{flight.arrivalPlace}"
+							itemValue="#{flight}" showSourceFilter="true"
+							showTargetFilter="true" filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available flights</f:facet>
+							<f:facet name="targetCaption">Flights in package</f:facet>
+							<p:ajax event="transfer" update="submitChanges" />
+							<p:column>#{flight.callSign}</p:column>
+							<p:column>#{flight.departurePlace}</p:column>
+							<p:column>#{flight.arrivalPlace}</p:column>
+						</p:pickList>
+						<br />
+						<p:pickList id="hotelPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter"
+							value="#{editPackBean.hotelEditModel}" var="hotel"
+							itemLabel="#{hotel.name} #{hotel.address}" itemValue="#{hotel}"
+							showSourceFilter="true" showTargetFilter="true"
+							filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available hotels</f:facet>
+							<f:facet name="targetCaption">Included hotels</f:facet>
+							<p:ajax event="transfer" update="submitChanges" />
+							<p:column>#{hotel.name}</p:column>
+							<p:column>#{hotel.address}</p:column>
+						</p:pickList>
+
+						<p:commandButton id="submitChanges"
+							disabled="#{editPackBean.newComponentListEmpty}"
+							action="#{editPackBean.editPackage()}"
+							update=":tableForm:packList" value="Submit changes"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editDialog').hide()" />
+					</p:scrollPanel>
+				</h:form>
+			</p:dialog>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

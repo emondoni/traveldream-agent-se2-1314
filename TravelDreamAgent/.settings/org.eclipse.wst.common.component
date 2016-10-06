@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="TravelDreamAgent">
+        <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
+        <dependent-module archiveName="TravelDreamAgentWeb.war" deploy-path="/" handle="module:/resource/TravelDreamAgentWeb/TravelDreamAgentWeb">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="TravelDreamAgentEJB.jar" deploy-path="/" handle="module:/resource/TravelDreamAgentEJB/TravelDreamAgentEJB">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="TravelDreamAgentEJBClient.jar" deploy-path="/" handle="module:/resource/TravelDreamAgentEJBClient/TravelDreamAgentEJBClient">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

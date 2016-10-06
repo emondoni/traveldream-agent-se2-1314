@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Buy a package</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<p:panel>
+				<h:form>
+					<div align="center">
+						<h:outputText style="font-weight:bold;font-size:larger"
+							value="You're buying"></h:outputText>
+						<br />
+						<h1 style="color: green">#{buyMgmtBean.purchase.boughtPackage.name}</h1>
+					</div>
+					
+					Before you can proceed to checkout, we need you to assign the dates for your package's
+					components. <br />
+					Please note that you must stick to the constraints on frequency (with respect to excursions
+					and flights) and check-in and check-out dates (for what concerns hotels). Disrespect of those
+					constraints bars the possibility to buy this package.
+					<br />
+					<br />
+					<p:messages id="msg" autoUpdate="true" closable="true"
+						showDetail="true" showSummary="false" />
+					<p:dataTable id="excDates" editable="true" editMode="cell"
+						emptyMessage="There are no excursions in this package."
+						value="#{buyMgmtBean.purchase.excursionDateAssignments}" var="eda"
+						rowKey="#{eda.excursion.productID}">
+						<f:facet name="header">Excursion dates</f:facet>
+						<p:column headerText="Name">#{eda.excursion.name}</p:column>
+						<p:column headerText="Frequency">#{eda.excursion.frequencyToString}</p:column>
+						<p:column headerText="Date">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{eda.date}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:calendar id="excursionDate" effect="fade" navigator="true"
+										yearRange="c:c+1" showOn="focus" value="#{eda.date}" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+					<br />
+					<p:dataTable id="flightDates" editable="true" editMode="cell"
+						emptyMessage="There are no flights in this package."
+						value="#{buyMgmtBean.purchase.flightDateAssignments}" var="fda"
+						rowKey="#{fda.flight.productID}">
+						<f:facet name="header">Flight dates</f:facet>
+						<p:column headerText="Call sign">#{fda.flight.callSign}</p:column>
+						<p:column headerText="From">#{fda.flight.departurePlace}</p:column>
+						<p:column headerText="To">#{fda.flight.arrivalPlace}</p:column>
+						<p:column headerText="Frequency">#{fda.flight.frequencyToString}</p:column>
+						<p:column headerText="Date">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{fda.date}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:calendar id="flightDate" effect="fade" navigator="true"
+										yearRange="c:c+1" showOn="focus" value="#{fda.date}" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+					<br />
+					<p:dataTable id="hotelDates" editable="true" editMode="cell"
+						emptyMessage="There are no hotels in this package."
+						value="#{buyMgmtBean.purchase.hotelDateAssignments}" var="hda"
+						rowKey="#{hda.hotel.productID}" style="width:100%">
+						<f:facet name="header">Hotel dates</f:facet>
+						<p:column headerText="Name">#{hda.hotel.name}</p:column>
+						<p:column headerText="Address">#{hda.hotel.address}</p:column>
+						<p:column headerText="Check-in">#{hda.hotel.checkInDaysToString}</p:column>
+						<p:column headerText="Check-in date">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{hda.arrivalDate}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:calendar id="hotelArrivalDate" effect="fade"
+										navigator="true" yearRange="c:c+1" showOn="focus"
+										value="#{hda.arrivalDate}" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column headerText="Check-out">#{hda.hotel.checkOutDaysToString}</p:column>
+						<p:column headerText="Check-out date">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{hda.departureDate}">
+										<f:convertDateTime locale="en_US" dateStyle="long"
+											pattern="E, MMMM dd, yyyy" />
+									</h:outputText>
+								</f:facet>
+								<f:facet name="input">
+									<p:calendar id="hotelDepartureDate" effect="fade"
+										navigator="true" yearRange="c:c+1" showOn="focus"
+										value="#{hda.departureDate}" >
+										<f:convertDateTime pattern="dd/MM/yy" />
+									</p:calendar>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</p:dataTable>
+					<br />
+					<div align="center">
+						<p:commandButton id="submitDates" value="Proceed to checkout!"
+							action="#{buyMgmtBean.proceedToCheckout()}" />
+					</div>
+				</h:form>
+			</p:panel>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Package Details</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<p:panel>
+				<h:panelGrid columns="2" columnClasses="panelgrid-column"
+					style="width:100%">
+					<h:column>
+						<h1>#{packDetBean.pack.name}</h1>
+					</h:column>
+					<h:column>
+						<h1 style="color: green; text-align: right">€
+							#{packDetBean.pack.price}</h1>
+					</h:column>
+				</h:panelGrid>
+				<br />
+				<br />
+				#{packDetBean.pack.description}
+				<br />
+				<br />
+				<h:panelGrid columns="3" style="width:100%"
+					columnClasses="datalist-column, datalist-column, datalist-column">
+					<h:column>
+						<div style="width: 100%; max-height: 500px">
+							<p:dataList value="#{packDetBean.excursions}" var="exc"
+								emptyMessage="No excursions are currently in this package."
+								id="excursions" paginator="true" rows="5"
+								paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink}"
+								paginatorPosition="top" type="none">
+								<f:facet name="header">Excursions</f:facet>
+								<p:commandButton id="showExc" style="margin-left:3px"
+									oncomplete="PF('excDialog').show()" icon="ui-icon-search"
+									update=":dialogExcForm :excDetailDlg"
+									title="Show Excursion Details">
+									<f:setPropertyActionListener
+										target="#{packDetBean.selectedExcursion}" value="#{exc}" />
+								</p:commandButton>
+								<h:outputText value="#{exc.name}" style="margin-left:10px" />
+								<br />
+							</p:dataList>
+						</div>
+					</h:column>
+					<h:column>
+						<div style="width: 100%; max-height: 500px">
+							<p:dataList value="#{packDetBean.flights}" var="flight"
+								emptyMessage="No flights are currently in this package."
+								id="flights" paginator="true" rows="5"
+								paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink}"
+								paginatorPosition="top" type="none">
+								<f:facet name="header">Flights</f:facet>
+								<p:commandButton id="showFlight" style="margin-left:3px"
+									oncomplete="PF('flightDialog').show()" icon="ui-icon-search"
+									update=":dialogFlightForm :flightDetailDlg"
+									title="Show Flight Details">
+									<f:setPropertyActionListener
+										target="#{packDetBean.selectedFlight}" value="#{flight}" />
+								</p:commandButton>
+								<h:outputText
+									value="#{flight.callSign} (#{flight.departurePlace} - #{flight.arrivalPlace})"
+									style="margin-left:10px" />
+								<br />
+							</p:dataList>
+						</div>
+					</h:column>
+					<h:column>
+						<div style="width: 100%; max-height: 500px">
+							<p:dataList style="max-height:500px"
+								emptyMessage="No hotels are currently in this package."
+								value="#{packDetBean.hotels}" var="hotel" id="hotels"
+								paginator="true" rows="5"
+								paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink}"
+								paginatorPosition="top" type="none">
+								<f:facet name="header">Hotels</f:facet>
+								<p:commandButton id="showHotel" style="margin-left:3px"
+									oncomplete="PF('hotelDialog').show()" icon="ui-icon-search"
+									update=":dialogHotelForm :hotelDetailDlg"
+									title="Show Hotel Details">
+									<f:setPropertyActionListener
+										target="#{packDetBean.selectedHotel}" value="#{hotel}" />
+								</p:commandButton>
+								<h:outputText value="#{hotel.name}" style="margin-left:10px" />
+								<br />
+							</p:dataList>
+						</div>
+					</h:column>
+				</h:panelGrid>
+				<br />
+				<h:form id="navForm">
+					<div align="center">
+						<h:outputText style="color:red;font-weight:bold"
+							value="We're sorry, but this package is no longer available."
+							rendered="#{not packDetBean.pack.available}"></h:outputText>
+						<h:panelGrid columns="3" rendered="#{packDetBean.pack.available}">
+							<p:commandButton id="buyButton" value="Buy this package"
+								action="#{packDetBean.buyPackage()}" />
+							<h:outputText value="or..." />
+							<p:commandButton id="custButton" value="Customize it!"
+								rendered="#{not packDetBean.customPackage}" update=":dialogForm"
+								oncomplete="PF('editDialog').show()">
+								<f:setPropertyActionListener target="#{editPackBean.pack}"
+									value="#{packDetBean.pack}" />
+								<f:actionListener
+									binding="#{editPackBean.prepareEditPickLists()}" />
+							</p:commandButton>
+							<p:commandButton id="editButton" value="Edit it!"
+								rendered="#{packDetBean.customPackage}" update=":dialogForm"
+								oncomplete="PF('editDialog').show()">
+								<f:setPropertyActionListener target="#{editPackBean.pack}"
+									value="#{packDetBean.pack}" />
+								<f:actionListener
+									binding="#{editPackBean.prepareEditPickLists()}" />
+							</p:commandButton>
+						</h:panelGrid>
+					</div>
+				</h:form>
+			</p:panel>
+
+			<p:dialog id="excDetailDlg" widgetVar="excDialog" header="Excursion"
+				resizable="false" showEffect="fade" hideEffect="fade" modal="true"
+				dynamic="true">
+				<div style="min-width: 300px; max-width: 600px">
+					<p:scrollPanel styleClass="scrollpanel-override"
+						style="max-height:600px" mode="native">
+						<h:form id="dialogExcForm">
+							<h:panelGrid id="excGeneral"
+								columnClasses="panelgrid-title, panelgrid-price" columns="2"
+								style="width:100%">
+								<h:column>
+									<h2>#{packDetBean.selectedExcursion.name}</h2>
+								</h:column>
+								<h:column rendered="#{not packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedExcursion.price}*</h2>
+								</h:column>
+								<h:column rendered="#{packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedExcursion.price}</h2>
+								</h:column>
+							</h:panelGrid>
+							#{packDetBean.selectedExcursion.description}
+							<br />
+							<br />
+							<h:panelGrid id="excDeparture" columns="4" style="width:100%">
+								<h:column>
+									<h:outputText style="text-align:left" value="From " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedExcursion.departurePlace}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedExcursion.departureTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+								<h:column>
+									<h:outputText style="text-align:left" value="To " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedExcursion.arrivalPlace}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedExcursion.arrivalTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+							</h:panelGrid>
+							<br />
+							<p:fieldset id="excVisits" legend="Visits">
+							#{packDetBean.selectedExcursion.visits}
+							</p:fieldset>
+							<br />
+							#{packDetBean.selectedExcursion.frequencyProspect}
+							<br />
+						</h:form>
+					</p:scrollPanel>
+					<h:outputText style="font-size:x-small"
+						rendered="#{not packDetBean.customPackage}"
+						value="* Nominal price: the price of the package might be lower than the sum of its components' prices." />
+				</div>
+			</p:dialog>
+
+			<p:dialog id="flightDetailDlg" widgetVar="flightDialog"
+				header="Flight" resizable="false" showEffect="fade"
+				hideEffect="fade" modal="true" dynamic="true">
+				<div style="min-width: 300px; max-width: 600px">
+					<p:scrollPanel styleClass="scrollpanel-override"
+						style="max-height:600px" mode="native">
+						<h:form id="dialogFlightForm">
+							<h:panelGrid id="flightGeneral"
+								columnClasses="panelgrid-title, panelgrid-price" columns="2"
+								style="width:100%">
+								<h:column>
+									<h2>#{packDetBean.selectedFlight.callSign}</h2>
+								</h:column>
+								<h:column rendered="#{not packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedFlight.price}*</h2>
+								</h:column>
+								<h:column rendered="#{packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedFlight.price}</h2>
+								</h:column>
+							</h:panelGrid>
+							#{packDetBean.selectedFlight.description}
+							<br />
+							<br />
+							<h:panelGrid id="flightDeparture" columns="4" style="width:100%">
+								<h:column>
+									<h:outputText style="text-align:left" value="From " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedFlight.departurePlace}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column style="width:10%">
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedFlight.departureTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+								<h:column style="width:15%">
+									<h:outputText style="text-align:left" value="To " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedFlight.arrivalPlace}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column style="width:10%">
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedFlight.arrivalTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+							</h:panelGrid>
+							<br />
+							#{packDetBean.selectedFlight.frequencyProspect}
+						</h:form>
+					</p:scrollPanel>
+					<h:outputText style="font-size:x-small"
+						rendered="#{not packDetBean.customPackage}"
+						value="* Nominal price: the price of the package might be lower than the sum of its components' prices." />
+				</div>
+			</p:dialog>
+
+			<p:dialog id="hotelDetailDlg" widgetVar="hotelDialog" header="Hotel"
+				resizable="false" showEffect="fade" hideEffect="fade" modal="true"
+				dynamic="true">
+				<div style="min-width: 300px; max-width: 600px">
+					<p:scrollPanel styleClass="scrollpanel-override"
+						style="max-height:600px" mode="native">
+						<h:form id="dialogHotelForm">
+							<h:panelGrid id="hotelGeneral"
+								columnClasses="panelgrid-title, panelgrid-price" columns="2"
+								style="width:100%">
+								<h:column>
+									<h2>#{packDetBean.selectedHotel.name}</h2>
+								</h:column>
+								<h:column rendered="#{not packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedHotel.price}*</h2>
+								</h:column>
+								<h:column rendered="#{packDetBean.customPackage}">
+									<h2 style="text-align: right; color: green">€
+										#{packDetBean.selectedHotel.price}</h2>
+								</h:column>
+							</h:panelGrid>
+							<h:outputText style="font-weight:bold"
+								value="#{packDetBean.selectedHotel.address}" />
+							<br />
+							#{packDetBean.selectedHotel.description}
+							<br />
+							<br />
+							<h:panelGrid id="flightDeparture" columns="4" style="width:100%">
+								<h:column>
+									<h:outputText style="text-align:left" value="Check-in on " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedHotel.checkInDaysToString}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column style="width:10%">
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedHotel.checkInTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+								<h:column style="width:15%">
+									<h:outputText style="text-align:left" value="Check-out on " />
+								</h:column>
+								<h:column>
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedHotel.checkOutDaysToString}"></h:outputText>
+								</h:column>
+								<h:column> at </h:column>
+								<h:column style="width:10%">
+									<h:outputText style="font-weight:bold"
+										value="#{packDetBean.selectedHotel.checkOutTime}">
+										<f:convertDateTime locale="en_US" pattern="H:mm" />
+									</h:outputText>
+								</h:column>
+							</h:panelGrid>
+							<br />
+						</h:form>
+					</p:scrollPanel>
+					<h:outputText style="font-size:x-small"
+						rendered="#{not packDetBean.customPackage}"
+						value="* Nominal price: the price of the package might be lower than the sum of its components' prices." />
+				</div>
+			</p:dialog>
+
+			<p:dialog id="editDlg" widgetVar="editDialog" header="Custom Package"
+				showEffect="fade" hideEffect="fade" modal="true" dynamic="true">
+				<h:form id="dialogForm">
+					<p:scrollPanel id="dialogScrollPanel"
+						styleClass="scrollpanel-override"
+						style="width:1150px;height:600px" mode="native">
+						<p:panelGrid id="editPackData" style="width:100%">
+							<p:row>
+								<p:column>
+									Package name: 
+									<p:inputText id="packName" value="#{editPackBean.pack.name}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									Description: 
+									<p:inputTextarea autoResize="false" id="packDescription"
+										value="#{editPackBean.pack.description}" style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:pickList id="excPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter" value="#{editPackBean.excEditModel}"
+							var="exc" itemLabel="#{exc.name}" itemValue="#{exc}"
+							showSourceFilter="true" showTargetFilter="true"
+							filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available excursions</f:facet>
+							<f:facet name="targetCaption">Excursions in package</f:facet>
+							<p:ajax event="transfer" update="customizePackage editPackage" />
+						</p:pickList>
+						<br />
+						<p:pickList id="flightPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter"
+							value="#{editPackBean.flightEditModel}" var="flight"
+							itemLabel="#{flight.callSign} #{flight.departurePlace} #{flight.arrivalPlace}"
+							itemValue="#{flight}" showSourceFilter="true"
+							showTargetFilter="true" filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available flights</f:facet>
+							<f:facet name="targetCaption">Flights in package</f:facet>
+							<p:ajax event="transfer" update="customizePackage editPackage" />
+							<p:column>#{flight.callSign}</p:column>
+							<p:column>#{flight.departurePlace}</p:column>
+							<p:column>#{flight.arrivalPlace}</p:column>
+						</p:pickList>
+						<br />
+						<p:pickList id="hotelPickList"
+							style="margin-left:auto;margin-right:auto"
+							converter="pickListConverter"
+							value="#{editPackBean.hotelEditModel}" var="hotel"
+							itemLabel="#{hotel.name} #{hotel.address}" itemValue="#{hotel}"
+							showSourceFilter="true" showTargetFilter="true"
+							filterMatchMode="contains">
+							<f:facet name="sourceCaption">Available hotels</f:facet>
+							<f:facet name="targetCaption">Included hotels</f:facet>
+							<p:ajax event="transfer" update="customizePackage editPackage" />
+							<p:column>#{hotel.name}</p:column>
+							<p:column>#{hotel.address}</p:column>
+						</p:pickList>
+
+						<p:commandButton id="customizePackage"
+							disabled="#{editPackBean.newComponentListEmpty}"
+							rendered="#{not packDetBean.customPackage}"
+							action="#{editPackBean.customizePackage()}" update="dialogForm"
+							value="Save customized package" />
+						<p:commandButton id="editPackage"
+							disabled="#{editPackBean.newComponentListEmpty}"
+							rendered="#{packDetBean.customPackage}"
+							action="#{editPackBean.editPackageAndReload()}" update="dialogForm"
+							value="Submit changes" />
+					</p:scrollPanel>
+				</h:form>
+			</p:dialog>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>TravelDream Agent - Success!</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<br />
+			<p:panel rendered="#{not empty successBean.justBought}">
+				<div align="center">
+					<h1 style="color: green">YAY!</h1>
+					You just bought "#{successBean.justBought.name}":
+					<h:link value="review your purchase" outcome="packDetails">
+						<f:param name="packId" value="#{successBean.justBought.packageID}"></f:param>
+					</h:link>
+					or
+					<h:link value="go back to the catalogue"
+						outcome="#{sessionMgr.currentUserHomePage}"></h:link>
+					.
+				</div>
+			</p:panel>
+
+			<p:panel rendered="#{empty successBean.justBought}">
+				<div align="center">
+					<h1 style="color: red">Oops!</h1>
+					Did you try to access this page without following the proper path
+					leading to it?
+					<h:link value="Too bad."
+						outcome="#{sessionMgr.currentUserHomePage}" />
+				</div>
+			</p:panel>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+	<title>TravelDream Agent - Basic Product Management</title>
+	<link type="text/css" rel="stylesheet"
+		href="#{request.contextPath}/resources/css/styles.css" />
+</h:head>
+
+<h:body>
+	<div id="wrap">
+		<div id="header">
+			<ui:include src="/common/header.xhtml" />
+		</div>
+
+		<div id="main">
+			<p:growl id="msg" life="4000" autoUpdate="true" showSummary="false"
+				showDetail="true"></p:growl>
+			<br />
+			<p:panel header="Add basic product" id="addBP" toggleable="true"
+				collapsed="true" toggleSpeed="250">
+				<h:form id="selectType">
+					<p:panelGrid columns="2" id="typeSelector"
+						style="width:500px;margin-left:auto;margin-right:auto">
+						<p:column>
+							<p:outputLabel for="type">Basic product type:</p:outputLabel>
+						</p:column>
+						<p:column>
+							<p:selectOneMenu style="width:300px" id="type"
+								value="#{bpMgmtBean.type}">
+								<f:selectItem itemLabel="Select one to begin" itemValue="" />
+								<f:selectItems value="#{enumConverter.types}" var="type"
+									itemValue="#{type}" itemLabel="#{type.label}" />
+								<p:ajax update=":addBPUpdateable" event="change" />
+							</p:selectOneMenu>
+						</p:column>
+					</p:panelGrid>
+				</h:form>
+
+				<p:outputPanel id="addBPUpdateable">
+					<br />
+					<h:form id="addExcForm">
+						<p:panelGrid style="width:100%" id="newExcursionData"
+							rendered="#{bpMgmtBean.thisExcursion}">
+							<p:row>
+								<p:column>
+									Excursion name: 
+									<p:inputText id="excName" value="#{bpMgmtBean.excursion.name}"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:25%">
+									Price of the excursion:
+									<p:inputText id="excPrice"
+										value="#{bpMgmtBean.excursion.price}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Description: 
+									<p:inputTextarea autoResize="false" id="excDescription"
+										value="#{bpMgmtBean.excursion.description}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									Departure place: 
+									<p:inputText id="excDepPlace"
+										value="#{bpMgmtBean.excursion.departurePlace}"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:25%">
+									Departure time: 
+									<p:calendar id="excDepTime" pattern="HH:mm" timeOnly="true"
+										value="#{bpMgmtBean.excursion.departureTime}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									Arrival place: 
+									<p:inputText id="excArrPlace"
+										value="#{bpMgmtBean.excursion.arrivalPlace}" style="width:98%" />
+								</p:column>
+								<p:column style="width:25%">
+									Arrival time: 
+									<p:calendar id="excArrTime" pattern="HH:mm" timeOnly="true"
+										value="#{bpMgmtBean.excursion.arrivalTime}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column style="width:85%">
+									Featured visits: 
+									<p:inputTextarea autoResize="false" id="excVisits" rows="7"
+										value="#{bpMgmtBean.excursion.visits}" style="width:98%" />
+								</p:column>
+								<p:column>
+									Frequency: 
+									<p:selectManyMenu id="excFrequency"
+										value="#{bpMgmtBean.excursion.frequency}"
+										converter="dayOfWeekConverter">
+										<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+											itemValue="#{day}" itemLabel="#{day.label}" />
+									</p:selectManyMenu>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:commandButton value="Add excursion"
+							update=":addExcForm:newExcursionData :tableForm:excList"
+							action="#{bpMgmtBean.addExcursion()}"
+							rendered="#{bpMgmtBean.thisExcursion}" />
+					</h:form>
+
+					<h:form id="addFlightForm">
+						<p:panelGrid style="width:100%" id="newFlightData"
+							rendered="#{bpMgmtBean.isThisFlight()}">
+							<p:row>
+								<p:column style="width:25%">
+									Call sign: 
+									<p:inputText id="flightName"
+										value="#{bpMgmtBean.flight.callSign}" style="width:98%" />
+								</p:column>
+								<p:column style="width:25%">
+									Price of the flight:
+									<p:inputText id="flightPrice"
+										value="#{bpMgmtBean.flight.price}" style="width:98%" />
+								</p:column>
+								<p:column>
+									Frequency:
+									<p:selectManyButton id="flightFreq"
+										value="#{bpMgmtBean.flight.frequency}"
+										converter="dayOfWeekConverter">
+										<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+											itemValue="#{day}" itemLabel="#{day.shortLabel}" />
+									</p:selectManyButton>
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="3">
+									Description: 
+									<p:inputTextarea autoResize="false" id="flightDescription"
+										value="#{bpMgmtBean.flight.description}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Departure place: 
+									<p:inputText id="flightDepPlace"
+										value="#{bpMgmtBean.flight.departurePlace}" style="width:98%" />
+								</p:column>
+								<p:column>
+									Departure time: 
+									<p:calendar id="flightDepTime" pattern="HH:mm" timeOnly="true"
+										value="#{bpMgmtBean.flight.departureTime}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Arrival place: 
+									<p:inputText id="flightArrPlace"
+										value="#{bpMgmtBean.flight.arrivalPlace}" style="width:98%" />
+								</p:column>
+								<p:column>
+									Arrival time: 
+									<p:calendar id="flightArrTime" pattern="HH:mm" timeOnly="true"
+										value="#{bpMgmtBean.flight.arrivalTime}" style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:commandButton value="Add flight"
+							update=":addFlightForm:newFlightData :tableForm:flightList"
+							action="#{bpMgmtBean.addFlight()}"
+							rendered="#{bpMgmtBean.thisFlight}" />
+					</h:form>
+
+					<h:form id="addHotelForm">
+						<p:panelGrid style="width:100%" id="newHotelData"
+							rendered="#{bpMgmtBean.isThisHotel()}">
+							<p:row>
+								<p:column>
+									Name of the hotel: 
+									<p:inputText id="hotelName" value="#{bpMgmtBean.hotel.name}"
+										style="width:98%" />
+								</p:column>
+								<p:column style="width:15%">
+									Price per night:
+									<p:inputText id="hotelPrice" value="#{bpMgmtBean.hotel.price}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Address of the hotel: 
+									<p:inputText id="hotelAddress"
+										value="#{bpMgmtBean.hotel.address}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column colspan="2">
+									Description: 
+									<p:inputTextarea autoResize="false" id="hotelDescription"
+										value="#{bpMgmtBean.hotel.description}" style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									Check-in days:
+									<p:selectManyButton id="hotelCheckInDays"
+										value="#{bpMgmtBean.hotel.checkInDays}"
+										converter="dayOfWeekConverter">
+										<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+											itemValue="#{day}" itemLabel="#{day.label}" />
+									</p:selectManyButton>
+								</p:column>
+								<p:column style="width:15%">
+									Check-in time: 
+									<p:calendar id="hotelCheckInTime" pattern="HH:mm"
+										timeOnly="true" value="#{bpMgmtBean.hotel.checkInTime}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+
+							<p:row>
+								<p:column>
+									Check-out days:
+									<p:selectManyButton id="hotelCheckOutDays"
+										value="#{bpMgmtBean.hotel.checkOutDays}"
+										converter="dayOfWeekConverter">
+										<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+											itemValue="#{day}" itemLabel="#{day.label}" />
+									</p:selectManyButton>
+								</p:column>
+								<p:column style="width:15%">
+									Check-out time: 
+									<p:calendar id="hotelCheckOutTime" pattern="HH:mm"
+										timeOnly="true" value="#{bpMgmtBean.hotel.checkOutTime}"
+										style="width:98%" />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:commandButton value="Add hotel"
+							update=":addHotelForm:newHotelData :tableForm:hotelList"
+							action="#{bpMgmtBean.addHotel()}"
+							rendered="#{bpMgmtBean.thisHotel}" />
+					</h:form>
+				</p:outputPanel>
+			</p:panel>
+			<br />
+			<h:form id="tableForm">
+				<p:panelGrid columns="2" id="tableSelectorGrid"
+					style="width:470px;margin-left:auto;margin-right:auto">
+					<p:column>I want to see...</p:column>
+					<p:column>
+						<p:selectOneMenu style="width:300px" id="type"
+							value="#{bpMgmtBean.listType}">
+							<f:selectItem itemLabel="Select one to begin" itemValue="" />
+							<f:selectItems value="#{enumConverter.types}" var="type"
+								itemValue="#{type}" itemLabel="#{type.label}" />
+							<p:ajax update="tablePanel" event="change" />
+						</p:selectOneMenu>
+					</p:column>
+				</p:panelGrid>
+				<br />
+
+				<p:outputPanel id="tablePanel">
+					<p:dataTable id="excList" rendered="#{bpMgmtBean.listExcursion}"
+						emptyMessage="No excursion has been created yet. Be the first!"
+						value="#{bpMgmtBean.excursionList}"
+						filteredValue="#{bpMgmtBean.filteredExcursions}" var="exc"
+						rowKey="#{exc.productID}"
+						selection="#{bpMgmtBean.selectedExcursions}">
+						<f:facet name="header">Excursion list</f:facet>
+						<p:column selectionMode="multiple" style="width:2%" />
+						<p:column headerText="Name" filterBy="name"
+							filterMatchMode="contains" filterStyle="width:80%" sortBy="name">#{exc.name}</p:column>
+						<p:column headerText="Price" sortBy="price" style="width:6%">#{exc.price}</p:column>
+						<p:column headerText="Departure place" filterBy="departurePlace"
+							filterMatchMode="contains" filterStyle="width:80%"
+							sortBy="departurePlace">#{exc.departurePlace}</p:column>
+						<p:column headerText="Departure time" sortBy="departureTime"
+							style="width:8%">
+							<h:outputText value="#{exc.departureTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Arrival place" filterBy="arrivalPlace"
+							filterMatchMode="contains" filterStyle="width:80%"
+							sortBy="arrivalPlace">#{exc.arrivalPlace}</p:column>
+						<p:column headerText="Arrival time" sortBy="arrivalTime"
+							style="width:8%">
+							<h:outputText value="#{exc.arrivalTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Frequency">#{exc.frequencyToString}</p:column>
+						<p:column style="width:4%">
+							<p:commandButton id="editExcButton"
+								update=":dialogExcForm:editExcData"
+								oncomplete="PF('editExcDialog').show()" title="Edit"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener
+									target="#{bpMgmtBean.selectedExcursion}" value="#{exc}" />
+							</p:commandButton>
+						</p:column>
+						<f:facet name="footer">
+							<p:commandButton value="Delete selected excursions"
+								icon="ui-icon-trash" update=":tableForm:tablePanel"
+								actionListener="#{bpMgmtBean.deleteSelectedExcursions()}">
+								<p:confirm header="Deletion confirmation"
+									message="Are you sure you want to delete the selected excursions? Any package containing them will be deleted as well."
+									icon="ui-icon-alert" />
+							</p:commandButton>
+							Total excursions: #{fn:length(bpMgmtBean.excursionList)}
+						</f:facet>
+					</p:dataTable>
+
+					<p:dataTable id="flightList" rendered="#{bpMgmtBean.listFlight}"
+						emptyMessage="No flight has been created yet. Be the first!"
+						value="#{bpMgmtBean.flightList}"
+						filteredValue="#{bpMgmtBean.filteredFlights}" var="flight"
+						rowKey="#{flight.productID}"
+						selection="#{bpMgmtBean.selectedFlights}">
+						<f:facet name="header">Flight list</f:facet>
+						<p:column selectionMode="multiple" style="width:2%" />
+						<p:column headerText="Call sign" filterBy="callSign" filterMatchMode="contains"
+							filterStyle="width:80%" sortBy="callSign" style="width:12%">#{flight.callSign}</p:column>
+						<p:column headerText="Price" sortBy="price" style="width:6%">#{flight.price}</p:column>
+						<p:column headerText="Departure place" filterBy="departurePlace"
+							filterMatchMode="contains" filterStyle="width:80%"
+							sortBy="departurePlace">#{flight.departurePlace}</p:column>
+						<p:column headerText="Departure time" sortBy="departureTime"
+							style="width:8%">
+							<h:outputText value="#{flight.departureTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Arrival place" filterBy="arrivalPlace"
+							filterMatchMode="contains" filterStyle="width:80%" sortBy="arrivalPlace">#{flight.arrivalPlace}</p:column>
+						<p:column headerText="Arrival time"
+							sortBy="arrivalTime" style="width:8%">
+							<h:outputText value="#{flight.arrivalTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Frequency">#{flight.frequencyToString}</p:column>
+						<p:column style="width:4%">
+							<p:commandButton id="editFlightButton"
+								update=":dialogFlightForm:editFlightData"
+								oncomplete="PF('editFlightDialog').show()" title="Edit"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener
+									target="#{bpMgmtBean.selectedFlight}" value="#{flight}" />
+							</p:commandButton>
+						</p:column>
+						<f:facet name="footer">
+							<p:commandButton value="Delete selected flights"
+								icon="ui-icon-trash" update=":tableForm:tablePanel"
+								actionListener="#{bpMgmtBean.deleteSelectedFlights()}">
+								<p:confirm header="Deletion confirmation"
+									message="Are you sure you want to delete the selected flights? Any package containing them will be deleted as well."
+									icon="ui-icon-alert" />
+							</p:commandButton>
+							Total flights: #{fn:length(bpMgmtBean.flightList)}
+						</f:facet>
+					</p:dataTable>
+
+					<p:dataTable id="hotelList" rendered="#{bpMgmtBean.listHotel}"
+						emptyMessage="No hotel has been created yet. Be the first!"
+						value="#{bpMgmtBean.hotelList}"
+						filteredValue="#{bpMgmtBean.filteredHotels}" var="hotel"
+						rowKey="#{hotel.productID}"
+						selection="#{bpMgmtBean.selectedHotels}">
+						<f:facet name="header">Hotel list</f:facet>
+						<p:column selectionMode="multiple" style="width:2%" />
+						<p:column headerText="Name" filterBy="name"
+							filterMatchMode="contains" filterStyle="width:80%" sortBy="name">#{hotel.name}</p:column>
+						<p:column headerText="Address" filterBy="address"
+							filterMatchMode="contains" filterStyle="width:80%">#{hotel.address}</p:column>
+						<p:column headerText="Price" sortBy="price" style="width:6%">#{hotel.price}</p:column>
+						<p:column headerText="Check-in days">#{hotel.checkInDaysToString}</p:column>
+						<p:column headerText="Check-in time" sortBy="checkInTime"
+							style="width:7%">
+							<h:outputText value="#{hotel.checkInTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Check-out days">#{hotel.checkOutDaysToString}</p:column>
+						<p:column headerText="Check-out time" sortBy="checkOutTime"
+							style="width:8%">
+							<h:outputText value="#{hotel.checkOutTime}">
+								<f:convertDateTime locale="en_US" pattern="H:mm" />
+							</h:outputText>
+						</p:column>
+						<p:column style="width:4%">
+							<p:commandButton id="editHotelButton"
+								update=":dialogHotelForm:editHotelData"
+								oncomplete="PF('editHotelDialog').show()" title="Edit"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener
+									target="#{bpMgmtBean.selectedHotel}" value="#{hotel}" />
+							</p:commandButton>
+						</p:column>
+						<f:facet name="footer">
+							<p:commandButton value="Delete selected hotels"
+								icon="ui-icon-trash" update=":tableForm:tablePanel"
+								actionListener="#{bpMgmtBean.deleteSelectedHotels()}">
+								<p:confirm header="Deletion confirmation"
+									message="Are you sure you want to delete the selected hotels? Any package containing them will be deleted as well."
+									icon="ui-icon-alert" />
+							</p:commandButton>
+							Total hotels: #{fn:length(bpMgmtBean.hotelList)}
+						</f:facet>
+					</p:dataTable>
+
+					<p:confirmDialog global="true" showEffect="fade">
+						<p:commandButton value="Yes" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+				</p:outputPanel>
+			</h:form>
+
+			<p:dialog id="editExcDlg" widgetVar="editExcDialog"
+				header="Edit Excursion" showEffect="fade" hideEffect="fade"
+				modal="true" dynamic="true">
+				<h:form id="dialogExcForm">
+					<p:panelGrid id="editExcData">
+						<p:row>
+							<p:column>
+								Excursion name: 
+								<p:inputText id="excName"
+									value="#{bpMgmtBean.selectedExcursion.name}" style="width:98%" />
+							</p:column>
+							<p:column style="width:25%">
+								Price of the excursion:
+								<p:inputText id="excPrice"
+									value="#{bpMgmtBean.selectedExcursion.price}" style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+								Description: 
+								<p:inputTextarea autoResize="false" id="excDescription"
+									value="#{bpMgmtBean.selectedExcursion.description}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								Departure place: 
+								<p:inputText id="excDepPlace"
+									value="#{bpMgmtBean.selectedExcursion.departurePlace}"
+									style="width:98%" />
+							</p:column>
+							<p:column style="width:25%">
+								Departure time: 
+								<p:calendar id="excDepTime" pattern="HH:mm" timeOnly="true"
+									value="#{bpMgmtBean.selectedExcursion.departureTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+								Arrival place: 
+								<p:inputText id="excArrPlace"
+									value="#{bpMgmtBean.selectedExcursion.arrivalPlace}"
+									style="width:98%" />
+							</p:column>
+							<p:column style="width:25%">
+								Arrival time: 
+								<p:calendar id="excArrTime" pattern="HH:mm" timeOnly="true"
+									value="#{bpMgmtBean.selectedExcursion.arrivalTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column style="width:85%">
+								Featured visits: 
+								<p:inputTextarea autoResize="false" id="excVisits" rows="7"
+									value="#{bpMgmtBean.selectedExcursion.visits}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								Frequency: 
+								<p:selectManyMenu id="excFrequency"
+									value="#{bpMgmtBean.selectedExcursion.frequency}"
+									converter="dayOfWeekConverter">
+									<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+										itemValue="#{day}" itemLabel="#{day.label}" />
+								</p:selectManyMenu>
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+					<p:commandButton id="submitChanges"
+						action="#{bpMgmtBean.editExcursion()}"
+						update=":tableForm:tablePanel :dialogExcForm:editExcData"
+						value="Submit changes"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editExcDialog').hide()" />
+				</h:form>
+			</p:dialog>
+
+			<p:dialog id="editFlightDlg" widgetVar="editFlightDialog"
+				header="Edit Flight" showEffect="fade" hideEffect="fade"
+				modal="true" dynamic="true">
+				<h:form id="dialogFlightForm">
+					<p:panelGrid id="editFlightData">
+						<p:row>
+							<p:column style="width:25%">
+								Call sign: 
+								<p:inputText id="flightName"
+									value="#{bpMgmtBean.selectedFlight.callSign}" style="width:98%" />
+							</p:column>
+							<p:column style="width:25%">
+								Price of the flight:
+								<p:inputText id="flightPrice"
+									value="#{bpMgmtBean.selectedFlight.price}" style="width:98%" />
+							</p:column>
+							<p:column>
+								Frequency:
+								<p:selectManyButton id="flightFreq"
+									value="#{bpMgmtBean.selectedFlight.frequency}"
+									converter="dayOfWeekConverter">
+									<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+										itemValue="#{day}" itemLabel="#{day.shortLabel}" />
+								</p:selectManyButton>
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="3">
+								Description: 
+								<p:inputTextarea autoResize="false" id="flightDescription"
+									value="#{bpMgmtBean.selectedFlight.description}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+								Departure place: 
+								<p:inputText id="flightDepPlace"
+									value="#{bpMgmtBean.selectedFlight.departurePlace}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								Departure time: 
+								<p:calendar id="flightDepTime" pattern="HH:mm" timeOnly="true"
+									value="#{bpMgmtBean.selectedFlight.departureTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+								Arrival place: 
+								<p:inputText id="flightArrPlace"
+									value="#{bpMgmtBean.selectedFlight.arrivalPlace}"
+									style="width:98%" />
+							</p:column>
+							<p:column>
+								Arrival time: 
+								<p:calendar id="flightArrTime" pattern="HH:mm" timeOnly="true"
+									value="#{bpMgmtBean.selectedFlight.arrivalTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+					<p:commandButton id="submitChanges"
+						action="#{bpMgmtBean.editFlight()}"
+						update=":tableForm:tablePanel :dialogFlightForm:editFlightData"
+						value="Submit changes"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editFlightDialog').hide()" />
+				</h:form>
+			</p:dialog>
+
+			<p:dialog id="editHotelDlg" widgetVar="editHotelDialog"
+				header="Edit Hotel" showEffect="fade" hideEffect="fade" modal="true"
+				dynamic="true">
+				<h:form id="dialogHotelForm">
+					<p:panelGrid id="editHotelData">
+						<p:row>
+							<p:column>
+									Name of the hotel: 
+									<p:inputText id="hotelName"
+									value="#{bpMgmtBean.selectedHotel.name}" style="width:98%" />
+							</p:column>
+							<p:column style="width:15%">
+									Price per night:
+									<p:inputText id="hotelPrice"
+									value="#{bpMgmtBean.selectedHotel.price}" style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+									Address of the hotel: 
+									<p:inputText id="hotelAddress"
+									value="#{bpMgmtBean.selectedHotel.address}" style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column colspan="2">
+									Description: 
+									<p:inputTextarea autoResize="false" id="hotelDescription"
+									value="#{bpMgmtBean.selectedHotel.description}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+									Check-in days:
+									<p:selectManyButton id="hotelCheckInDays"
+									value="#{bpMgmtBean.selectedHotel.checkInDays}"
+									converter="dayOfWeekConverter">
+									<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+										itemValue="#{day}" itemLabel="#{day.label}" />
+								</p:selectManyButton>
+							</p:column>
+							<p:column style="width:15%">
+									Check-in time: 
+									<p:calendar id="hotelCheckInTime" pattern="HH:mm"
+									timeOnly="true" value="#{bpMgmtBean.selectedHotel.checkInTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+
+						<p:row>
+							<p:column>
+									Check-out days:
+									<p:selectManyButton id="hotelCheckOutDays"
+									value="#{bpMgmtBean.selectedHotel.checkOutDays}"
+									converter="dayOfWeekConverter">
+									<f:selectItems value="#{enumConverter.daysOfWeek}" var="day"
+										itemValue="#{day}" itemLabel="#{day.label}" />
+								</p:selectManyButton>
+							</p:column>
+							<p:column style="width:15%">
+									Check-out time: 
+									<p:calendar id="hotelCheckOutTime" pattern="HH:mm"
+									timeOnly="true"
+									value="#{bpMgmtBean.selectedHotel.checkOutTime}"
+									style="width:98%" />
+							</p:column>
+						</p:row>
+					</p:panelGrid>
+
+					<p:commandButton id="submitChanges"
+						action="#{bpMgmtBean.editHotel()}"
+						update=":tableForm:tablePanel :dialogHotelForm:editHotelData"
+						value="Submit changes"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('editHotelDialog').hide()" />
+				</h:form>
+			</p:dialog>
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:include src="/common/footer.xhtml" />
+	</div>
+</h:body>
+</html>
